@@ -1,0 +1,10 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "scotch/box"
+  config.vm.box_version = "3.5"
+
+  # Configuración de red en modo puente (red pública)
+  config.vm.network "public_network"
+end

@@ -1,0 +1,76 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "ubuntu/jammy64"
+
+  # Máquina 1: ASOServer1
+  config.vm.define "asoServer1" do |server1|
+    server1.vm.hostname = "asoServer1"
+
+    server1.vm.network "private_network",
+      ip: "192.168.1.1",
+      netmask: "255.255.255.128",
+      virtualbox__intnet: "net1"
+
+    server1.vm.network "forwarded_port", guest: 53, host: 5300, protocol: "udp", host_ip: "0.0.0.0"
+    server1.vm.network "forwarded_port", guest: 53, host: 5300, protocol: "tcp", host_ip: "0.0.0.0"
+    server1.vm.network "public_network"
+
+    server1.vm.provider "virtualbox" do |vb|
+      vb.name = "asoServer1"
+      vb.cpus = 2
+      vb.memory = 2048
+    end
+
+    server1.vm.provision "shell", inline: <<-SHELL
+      apt-get update
+      apt-get install -y net-tools
+      ifconfig
+    SHELL
+  end
+
+  # Máquina 2: ASOServer2
+  config.vm.define "asoServer2" do |server2|
+    server2.vm.hostname = "asoServer2"
+
+    server2.vm.network "private_network",
+      type: "dhcp",
+      virtualbox__intnet: "net1"
+    
+    server2.vm.network "private_network",
+      ip: "192.168.1.129",
+      netmask: "255.255.255.128",
+      virtualbox__intnet: "net2"
+
+    server2.vm.provider "virtualbox" do |vb|
+      vb.name = "asoServer2"
+      vb.cpus = 2
+      vb.memory = 2048
+    end
+
+    server2.vm.provision "shell", inline: <<-SHELL
+      apt-get update
+      apt-get install -y net-tools
+      ping -c 4 192.168.1.1
+    SHELL
+  end
+
+
+
+  # Máquina 3: Cliente
+  config.vm.define "cliente" do |cliente|
+    cliente.vm.hostname = "cliente"    
+    cliente.vm.network "private_network",
+      type: "dhcp",
+      virtualbox__intnet: "net2" 
+
+    cliente.vm.provider "virtualbox" do |vb|
+      vb.name = "cliente"
+      vb.cpus = 1 
+      vb.memory = 1024 
+    end
+  end
+
+end

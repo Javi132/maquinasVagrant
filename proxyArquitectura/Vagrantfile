@@ -1,0 +1,29 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/jammy64"
+
+  # Máquina 4: Proxy
+  config.vm.define "proxy" do |proxy|
+    proxy.vm.hostname = "proxy"
+
+    # Interfaz en net1 configurada para pedir IP por DHCP
+    proxy.vm.network "private_network",
+      type: "dhcp",
+      virtualbox__intnet: "net1"
+
+    proxy.vm.provider "virtualbox" do |vb|
+      vb.name = "proxy"
+      vb.cpus = 2
+      vb.memory = 2048
+      # MAC fija para la reserva en el servidor DHCP de asoServer1 (192.168.1.1)
+      vb.customize ["modifyvm", :id, "--macaddress2", "080027112233"]
+    end
+
+    proxy.vm.provision "shell", inline: <<-SHELL
+      apt-get update
+      apt-get install -y net-tools squid
+    SHELL
+  end
+end

@@ -1,0 +1,22 @@
+# Vagrant
+.vagrant/
+
+# Logs
+*.log
+
+# Archivos temporales
+*.tmp
+*.bak
+*.swp
+
+# Claves privadas
+*.pem
+*.key
+id_rsa
+id_ed25519
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+ubuntu1804_1/Actividad2/copia_alterada.tar.xz
+ubuntu1804_1/Actividad2/linux-5.15.10.tar.xz

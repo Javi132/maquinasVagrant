@@ -1,0 +1,22 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/jammy64"
+  config.vm.hostname = "chavisUbuntuJammy"
+  
+  # Solo dejamos esta línea, que ya tiene tu interfaz enp0s8 fijada
+  config.vm.network "public_network", bridge: "enp0s8"
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.customize ['modifyvm', :id, '--name', 'PrimeraMaquinaVagrantVbox']
+    vb.customize ['modifyvm', :id, '--cpus', '2']
+    vb.customize ['modifyvm', :id, '--memory', '2048']
+  end
+  
+  config.vm.provision "shell", inline: <<-SHELL
+    echo "Hola desde la VM"
+    apt-get update
+    apt-get install -y netplan.io
+  SHELL
+end
